@@ -26,3 +26,11 @@ class InscriptionForm(UserCreationForm):
         if commit:
             utilisateur.save()
         return utilisateur
+class ProfilForm(forms.ModelForm):
+    """
+    Formulaire permettant à un utilisateur connecté de modifier
+    ses propres informations (cas d'utilisation "gérer son profil").
+    """
+    class Meta:
+        model = Utilisateur
+        fields = ('email', 'telephone', 'ville')

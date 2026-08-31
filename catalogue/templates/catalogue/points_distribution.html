@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Points de distribution - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Nos points de distribution</h1>
+
+<div class="row g-4">
+    {% for point in points %}
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ point.nom }}</h5>
+                <p class="card-text mb-1">📍 {{ point.quartier }}, {{ point.ville }}</p>
+                {% if point.telephone %}
+                    <p class="card-text">📞 {{ point.telephone }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-muted">Aucun point de distribution enregistré pour le moment.</p>
+    {% endfor %}
+</div>
+{% endblock %}
