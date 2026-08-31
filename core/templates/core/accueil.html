@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Accueil - Tradex Distrib'IA{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        background: linear-gradient(135deg, #ff8c00, #d9480f);
+        color: white;
+        border-radius: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero text-center py-5 mb-5 px-3">
+    <h1 class="mb-3">Bienvenue sur Tradex Distrib'IA</h1>
+    <p class="lead">La distribution intelligente de gaz domestique, partout au Cameroun.</p>
+    <a href="{% url 'inscription' %}" class="btn btn-light btn-lg mt-3 fw-bold">S'inscrire gratuitement</a>
+</div>
+
+<div class="text-center mb-5">
+    <img src="{% static 'images/bouteilles-gaz.jpg' %}" alt="Bouteilles de gaz Tradex" class="img-fluid rounded shadow">
+</div>
+
+<div class="text-center text-muted mb-5">
+    <p>📍 Livraison disponible dans toute la ville de Yaoundé</p>
+</div>
+{% endblock %}
