@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Alertes de stock - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Alertes de stock</h1>
+<p class="text-center text-muted">Produits avec un stock inférieur à {{ seuil }} unités.</p>
+
+{% if produits_en_alerte %}
+<table class="table table-danger">
+    <thead><tr><th>Produit</th><th>Stock restant</th></tr></thead>
+    <tbody>
+        {% for produit in produits_en_alerte %}
+        <tr><td>{{ produit.nom }}</td><td>{{ produit.stock_disponible }}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="text-center text-success">✅ Aucune alerte, tous les stocks sont suffisants.</p>
+{% endif %}
+{% endblock %}

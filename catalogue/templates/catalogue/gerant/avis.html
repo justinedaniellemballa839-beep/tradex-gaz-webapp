@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Avis clients - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Gérer les avis clients</h1>
+
+{% for a in avis %}
+<div class="card p-3 mb-3 shadow-sm">
+    <p class="mb-1"><strong>{{ a.client.username }}</strong> sur <strong>{{ a.produit.nom }}</strong> — {{ a.note }}/5</p>
+    <p class="mb-2 text-muted">{{ a.commentaire|default:"(pas de commentaire)" }}</p>
+    <p class="mb-2">
+        {% if a.approuve %}<span class="badge bg-success">Approuvé</span>{% else %}<span class="badge bg-secondary">Masqué</span>{% endif %}
+    </p>
+    <form method="post" class="d-flex gap-2">
+        {% csrf_token %}
+        <input type="hidden" name="avis_id" value="{{ a.id }}">
+        <button type="submit" name="action" value="approuver" class="btn btn-sm btn-success">Approuver</button>
+        <button type="submit" name="action" value="rejeter" class="btn btn-sm btn-secondary">Masquer</button>
+        <button type="submit" name="action" value="supprimer" class="btn btn-sm btn-danger">Supprimer</button>
+    </form>
+</div>
+{% empty %}
+<p class="text-center text-muted">Aucun avis pour le moment.</p>
+{% endfor %}
+{% endblock %}

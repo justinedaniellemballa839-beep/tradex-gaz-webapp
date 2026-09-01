@@ -17,6 +17,9 @@
                 <h5 class="card-title">{{ produit.nom }}</h5>
                 <p class="card-text text-muted">{{ produit.description }}</p>
                 <p class="fw-bold fs-5">{{ produit.prix }} FCFA</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'laisser_avis' produit.id %}" class="btn btn-sm btn-outline-secondary mb-2">Laisser un avis</a><br>
+                {% endif %}
                 {% if produit.stock_disponible > 0 %}
                     <span class="badge bg-success">En stock</span>
                 {% else %}

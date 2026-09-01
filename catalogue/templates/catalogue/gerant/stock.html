@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Gérer le stock - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Gérer le stock</h1>
+
+<table class="table table-bordered">
+    <thead>
+        <tr><th>Produit</th><th>Stock actuel</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+        {% for produit in produits %}
+        <tr>
+            <td>{{ produit.nom }}</td>
+            <td>
+                {% if produit.stock_disponible < 10 %}
+                    <span class="badge bg-danger">{{ produit.stock_disponible }}</span>
+                {% else %}
+                    <span class="badge bg-success">{{ produit.stock_disponible }}</span>
+                {% endif %}
+            </td>
+            <td><a href="{% url 'modifier_stock' produit.id %}" class="btn btn-sm btn-primary">Modifier</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

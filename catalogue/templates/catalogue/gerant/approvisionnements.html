@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Approvisionnements - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Gérer les approvisionnements</h1>
+
+<div class="row justify-content-center mb-4">
+    <div class="col-md-6">
+        <form method="post" class="card p-4 shadow-sm">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary w-100">Enregistrer l'approvisionnement</button>
+        </form>
+    </div>
+</div>
+
+<h5>Historique récent</h5>
+<table class="table">
+    <thead><tr><th>Produit</th><th>Quantité</th><th>Fournisseur</th><th>Date</th></tr></thead>
+    <tbody>
+        {% for a in approvisionnements %}
+        <tr>
+            <td>{{ a.produit.nom }}</td>
+            <td>+{{ a.quantite }}</td>
+            <td>{{ a.fournisseur|default:"—" }}</td>
+            <td>{{ a.date_creation|date:"d/m/Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

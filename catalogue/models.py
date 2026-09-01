@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class ProduitGaz(models.Model):
@@ -42,3 +43,44 @@ class PointDistribution(models.Model):
     class Meta:
         verbose_name = "Point de distribution"
         verbose_name_plural = "Points de distribution"
+
+
+class Avis(models.Model):
+    """
+    Un avis laissé par un client sur un produit.
+    Cas d'utilisation : le client le crée (Phase 3/4),
+    le gérant de station le consulte/modère (Phase 5).
+    """
+    produit = models.ForeignKey(ProduitGaz, on_delete=models.CASCADE, related_name='avis')
+    client = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    note = models.PositiveSmallIntegerField(verbose_name="Note (1 à 5)")
+    commentaire = models.TextField(blank=True)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    approuve = models.BooleanField(default=True, verbose_name="Approuvé (visible publiquement)")
+
+    def __str__(self):
+        return f"Avis de {self.client.username} sur {self.produit.nom} ({self.note}/5)"
+
+    class Meta:
+        verbose_name = "Avis"
+        verbose_name_plural = "Avis"
+        ordering = ['-date_creation']
+class Approvisionnement(models.Model):
+    """
+    Un réapprovisionnement de stock effectué par le gérant de station.
+    Cas d'utilisation : "gérer approvisionnements".
+    Chaque approvisionnement validé augmente le stock du produit concerné.
+    """
+    produit = models.ForeignKey(ProduitGaz, on_delete=models.CASCADE, related_name='approvisionnements')
+    quantite = models.PositiveIntegerField(verbose_name="Quantité ajoutée")
+    fournisseur = models.CharField(max_length=150, blank=True)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    gerant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f"+{self.quantite} {self.produit.nom} ({self.date_creation:%d/%m/%Y})"
+
+    class Meta:
+        verbose_name = "Approvisionnement"
+        verbose_name_plural = "Approvisionnements"
+        ordering = ['-date_creation']

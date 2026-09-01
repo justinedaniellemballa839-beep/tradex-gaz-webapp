@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Prévisions - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Prévoir la demande</h1>
+<div class="alert alert-warning">
+    ⚠️ Estimation basique basée sur l'historique des commandes. La vraie prévision par IA sera branchée plus tard.
+</div>
+
+<table class="table">
+    <thead><tr><th>Produit</th><th>Quantité moyenne commandée</th><th>Nombre de commandes</th></tr></thead>
+    <tbody>
+        {% for p in previsions %}
+        <tr>
+            <td>{{ p.produit__nom }}</td>
+            <td>{{ p.quantite_moyenne|floatformat:1 }}</td>
+            <td>{{ p.nombre_commandes }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="text-center text-muted">Pas encore assez de commandes pour estimer la demande.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
