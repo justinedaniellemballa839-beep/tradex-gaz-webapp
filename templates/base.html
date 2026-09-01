@@ -42,6 +42,11 @@
                         </ul>
                     </li>
                     {% endif %}
+                    {% if user.is_authenticated and user.role == 'livreur' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'liste_livraisons' %}">Espace livreur</a>
+                    </li>
+                    {% endif %}
                 </ul>
                 <ul class="navbar-nav align-items-lg-center gap-lg-2 mt-3 mt-lg-0">
                     {% if user.is_authenticated %}

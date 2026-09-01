@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Livraison #{{ livraison.id }} - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Livraison - Commande #{{ livraison.commande.id }}</h1>
+
+<div class="card p-4 shadow-sm mb-4">
+    <p><strong>📍 Adresse (localiser lieu de livraison) :</strong> {{ livraison.commande.adresse_livraison }}</p>
+    <p><strong>👤 Client :</strong> {{ livraison.commande.client.username }}</p>
+    <p><strong>📞 Contacter client :</strong>
+        {% if livraison.commande.client.telephone %}
+            <a href="tel:{{ livraison.commande.client.telephone }}">{{ livraison.commande.client.telephone }}</a>
+        {% else %}
+            <span class="text-muted">Numéro non renseigné</span>
+        {% endif %}
+    </p>
+    <p><strong>Statut :</strong> {{ livraison.get_statut_display }}</p>
+</div>
+
+<h5>Produits à livrer</h5>
+<ul class="list-group mb-4">
+    {% for ligne in livraison.commande.lignes.all %}
+    <li class="list-group-item">{{ ligne.quantite }} x {{ ligne.produit.nom }}</li>
+    {% endfor %}
+</ul>
+
+{% if livraison.statut != 'livree' %}
+<form method="post" action="{% url 'confirmer_livraison' livraison.id %}" class="text-center">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success btn-lg">Confirmer la livraison</button>
+</form>
+{% else %}
+<p class="text-center text-success fw-bold">✅ Livraison confirmée</p>
+{% endif %}
+{% endblock %}

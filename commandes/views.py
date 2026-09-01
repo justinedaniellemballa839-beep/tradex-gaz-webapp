@@ -53,6 +53,9 @@ def effectuer_paiement(request, commande_id):
             commande.statut = Commande.Statut.CONFIRMEE
             commande.save()
 
+            from livraison.models import Livraison
+            Livraison.objects.get_or_create(commande=commande)
+
             messages.success(request, "Paiement validé ! Ta commande est confirmée.")
             return redirect('detail_commande', commande_id=commande.id)
     else:

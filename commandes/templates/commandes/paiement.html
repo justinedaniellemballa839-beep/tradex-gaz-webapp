@@ -14,15 +14,47 @@
 
         <form method="post" class="card p-4 shadow-sm">
             {% csrf_token %}
-            {% for field in form %}
-                <div class="mb-3">
-                    <label class="form-label">{{ field.label }}</label>
-                    {{ field }}
-                </div>
-            {% endfor %}
+
+            <div class="mb-3">
+                <label class="form-label">{{ form.methode.label }}</label>
+                {{ form.methode }}
+                {% if form.methode.errors %}
+                    <div class="text-danger small">{{ form.methode.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3" id="champ-telephone" style="display: none;">
+                <label class="form-label">{{ form.numero_telephone.label }}</label>
+                {{ form.numero_telephone }}
+                <div class="form-text">Le numéro associé à ton compte Mobile Money.</div>
+                {% if form.numero_telephone.errors %}
+                    <div class="text-danger small">{{ form.numero_telephone.errors }}</div>
+                {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+
             <p class="text-muted small">⚠️ Paiement simulé pour l'instant — le vrai Mobile Money sera branché en fin de projet.</p>
             <button type="submit" class="btn btn-success w-100">Payer maintenant</button>
         </form>
     </div>
 </div>
+
+<script>
+    const selectMethode = document.getElementById('id_methode');
+    const champTelephone = document.getElementById('champ-telephone');
+
+    function mettreAJourAffichage() {
+        if (selectMethode.value === 'orange_money' || selectMethode.value === 'mtn_momo') {
+            champTelephone.style.display = 'block';
+        } else {
+            champTelephone.style.display = 'none';
+        }
+    }
+
+    selectMethode.addEventListener('change', mettreAJourAffichage);
+    mettreAJourAffichage();
+</script>
 {% endblock %}

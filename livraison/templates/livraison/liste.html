@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Livraisons - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Mes livraisons en cours</h1>
+
+{% for livraison in mes_livraisons %}
+<div class="card p-3 mb-2 shadow-sm">
+    <div class="d-flex justify-content-between align-items-center">
+        <span>Commande #{{ livraison.commande.id }} — {{ livraison.commande.adresse_livraison }}</span>
+        <a href="{% url 'detail_livraison' livraison.id %}" class="btn btn-sm btn-primary">Voir</a>
+    </div>
+</div>
+{% empty %}
+<p class="text-muted text-center">Aucune livraison en cours pour toi.</p>
+{% endfor %}
+
+<h1 class="mb-4 mt-5 text-center">Livraisons disponibles</h1>
+
+{% for livraison in en_attente %}
+<div class="card p-3 mb-2 shadow-sm">
+    <div class="d-flex justify-content-between align-items-center">
+        <span>Commande #{{ livraison.commande.id }} — {{ livraison.commande.adresse_livraison }}</span>
+        <form method="post" action="{% url 'prendre_en_charge' livraison.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-success">Prendre en charge</button>
+        </form>
+    </div>
+</div>
+{% empty %}
+<p class="text-muted text-center">Aucune livraison en attente pour le moment.</p>
+{% endfor %}
+{% endblock %}

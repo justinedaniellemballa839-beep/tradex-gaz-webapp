@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'core',
     'catalogue',
     'commandes',
+    'livraison',
 ]
 AUTH_USER_MODEL = 'comptes.Utilisateur'
 

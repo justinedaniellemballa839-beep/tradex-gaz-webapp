@@ -73,6 +73,7 @@ class Paiement(models.Model):
 
     commande = models.OneToOneField(Commande, on_delete=models.CASCADE, related_name='paiement')
     methode = models.CharField(max_length=20, choices=Methode.choices)
+    numero_telephone = models.CharField(max_length=20, blank=True, verbose_name="Numéro Mobile Money")
     statut = models.CharField(max_length=20, choices=Statut.choices, default=Statut.EN_ATTENTE)
     reference = models.CharField(max_length=50, blank=True, verbose_name="Référence de transaction")
     date_paiement = models.DateTimeField(null=True, blank=True)
