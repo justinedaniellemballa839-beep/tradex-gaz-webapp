@@ -45,3 +45,36 @@ def poser_question(message, historique=None):
         config=types.GenerateContentConfig(system_instruction=INSTRUCTIONS_SYSTEME),
     )
     return reponse.text
+def analyser_previsions(donnees_ventes):
+    """
+    Envoie l'historique des ventes à Gemini pour obtenir une vraie analyse
+    de prévision de la demande, en langage naturel, à destination du gérant.
+    `donnees_ventes` est une liste de dicts avec nom du produit,
+    quantité moyenne commandée, et nombre de commandes.
+    """
+    client = _get_client()
+
+    lignes = "\n".join(
+        f"- {d['produit__nom']} : quantité moyenne par commande = {d['quantite_moyenne']:.1f}, "
+        f"nombre total de commandes = {d['nombre_commandes']}"
+        for d in donnees_ventes
+    )
+
+    instructions = (
+        "Tu es un analyste spécialisé dans la distribution de gaz domestique au Cameroun. "
+        "À partir des données de ventes ci-dessous, rédige une courte analyse (5 à 8 phrases) "
+        "en français, texte brut sans Markdown, qui identifie : "
+        "1) le produit avec la plus forte demande, "
+        "2) une recommandation concrète de niveau de stock à prévoir pour la semaine prochaine, "
+        "3) un point de vigilance si les données sont insuffisantes pour être fiables."
+    )
+
+    if not donnees_ventes:
+        return "Pas encore assez de données de commandes pour produire une analyse fiable."
+
+    reponse = client.models.generate_content(
+        model='gemini-3.6-flash',
+        contents=[{'role': 'user', 'parts': [{'text': lignes}]}],
+        config=types.GenerateContentConfig(system_instruction=instructions),
+    )
+    return reponse.text

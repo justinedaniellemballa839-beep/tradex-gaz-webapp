@@ -4,10 +4,13 @@
 
 {% block content %}
 <h1 class="mb-4 text-center">Prévoir la demande</h1>
-<div class="alert alert-warning">
-    ⚠️ Estimation basique basée sur l'historique des commandes. La vraie prévision par IA sera branchée plus tard.
+
+<div class="card p-4 shadow-sm mb-4 bg-light">
+    <h5>🤖 Analyse IA</h5>
+    <p class="mb-0" style="white-space: pre-line;">{{ analyse_ia }}</p>
 </div>
 
+<h5>Données brutes</h5>
 <table class="table">
     <thead><tr><th>Produit</th><th>Quantité moyenne commandée</th><th>Nombre de commandes</th></tr></thead>
     <tbody>

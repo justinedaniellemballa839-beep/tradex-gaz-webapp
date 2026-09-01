@@ -87,16 +87,23 @@ def alertes_stock(request):
 def previsions_demande(request):
     """
     Cas d'utilisation "prévoir la demande" et "consulter prévisions IA".
-    ATTENTION : ceci est une estimation TRES basique (moyenne des quantités
-    déjà commandées par produit), en attendant une vraie API IA en Phase 8.
+    Utilise Gemini pour une vraie analyse en langage naturel,
+    basée sur l'historique réel des commandes.
     """
-    previsions = (
+    previsions = list(
         LigneCommande.objects
         .values('produit__nom')
         .annotate(quantite_moyenne=Avg('quantite'), nombre_commandes=Count('id'))
         .order_by('-quantite_moyenne')
     )
-    return render(request, 'catalogue/gerant/previsions.html', {'previsions': previsions})
+
+    from chatbot.services import analyser_previsions
+    analyse_ia = analyser_previsions(previsions)
+
+    return render(request, 'catalogue/gerant/previsions.html', {
+        'previsions': previsions,
+        'analyse_ia': analyse_ia,
+    })
 
 
 @role_required('gerant_station')
