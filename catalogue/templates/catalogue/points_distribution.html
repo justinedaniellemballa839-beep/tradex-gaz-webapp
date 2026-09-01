@@ -5,6 +5,8 @@
 {% block content %}
 <h1 class="mb-4 text-center">Nos points de distribution</h1>
 
+<div id="carte" style="height: 400px;" class="rounded shadow-sm mb-4"></div>
+
 <div class="row g-4">
     {% for point in points %}
     <div class="col-md-4">
@@ -22,4 +24,31 @@
     <p class="text-center text-muted">Aucun point de distribution enregistré pour le moment.</p>
     {% endfor %}
 </div>
+
+<script>
+        const carte = L.map('carte').setView([3.8667, 11.5167], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(carte);
+
+    const points = [
+        {% for point in points %}
+            {% if point.latitude and point.longitude %}
+            {
+                nom: "{{ point.nom|escapejs }}",
+                ville: "{{ point.ville|escapejs }}",
+                quartier: "{{ point.quartier|escapejs }}",
+                lat: {{ point.latitude }},
+                lng: {{ point.longitude }}
+            },
+            {% endif %}
+        {% endfor %}
+    ];
+
+    points.forEach(function(p) {
+        L.marker([p.lat, p.lng]).addTo(carte)
+            .bindPopup(`<strong>${p.nom}</strong><br>${p.quartier}, ${p.ville}`);
+    });
+</script>
 {% endblock %}
