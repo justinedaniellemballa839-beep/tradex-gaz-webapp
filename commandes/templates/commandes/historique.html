@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes commandes - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Mes commandes</h1>
+
+<div class="list-group">
+    {% for commande in commandes %}
+    <a href="{% url 'detail_commande' commande.id %}" class="list-group-item list-group-item-action">
+        <div class="d-flex justify-content-between">
+            <span>Commande #{{ commande.id }} — {{ commande.date_creation|date:"d/m/Y" }}</span>
+            <span class="badge bg-info text-dark">{{ commande.get_statut_display }}</span>
+        </div>
+    </a>
+    {% empty %}
+    <p class="text-center text-muted">Tu n'as encore passé aucune commande.</p>
+    {% endfor %}
+</div>
+<div class="text-center mt-4">
+    <a href="{% url 'passer_commande' %}" class="btn btn-primary">Passer une nouvelle commande</a>
+</div>
+{% endblock %}

@@ -9,27 +9,53 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-        <a class="navbar-brand" href="{% url 'accueil' %}">Tradex Distrib'IA</a>
-        <a href="{% url 'liste_produits' %}" class="btn btn-outline-light btn-sm me-2">Produits</a>
-        <a href="{% url 'liste_points_distribution' %}" class="btn btn-outline-light btn-sm me-2">Points de distribution</a>
-        <div class="ms-auto">
-            {% if user.is_authenticated %}
-                <span class="text-white me-3">Bonjour, {{ user.username }}</span>
-                <a href="{% url 'profil' %}" class="btn btn-outline-light btn-sm me-2">Mon profil</a>
-                <form method="post" action="{% url 'deconnexion' %}" class="d-inline">
-                     {% csrf_token %}
-                    <button type="submit" class="btn btn-light btn-sm">Se déconnecter</button>
-                </form>
-            {% else %}
-                <a href="{% url 'connexion' %}" class="btn btn-outline-light btn-sm me-2">Se connecter</a>
-                <a href="{% url 'inscription' %}" class="btn btn-light btn-sm">S'inscrire</a>
-            {% endif %}
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'accueil' %}">Tradex Distrib'IA</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+                <ul class="navbar-nav me-auto mt-2 mt-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'liste_produits' %}">Produits</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'liste_points_distribution' %}">Points de distribution</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'historique_commandes' %}">Mes commandes</a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav align-items-lg-center gap-lg-2 mt-3 mt-lg-0">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item text-white mb-2 mb-lg-0">Bonjour, {{ user.username }}</li>
+                        <li class="nav-item mb-2 mb-lg-0">
+                            <a href="{% url 'profil' %}" class="btn btn-outline-light btn-sm w-100">Mon profil</a>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'deconnexion' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-light btn-sm w-100">Se déconnecter</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item mb-2 mb-lg-0">
+                            <a href="{% url 'connexion' %}" class="btn btn-outline-light btn-sm w-100">Se connecter</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'inscription' %}" class="btn btn-light btn-sm w-100">S'inscrire</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <main class="container mt-4">
         {% block content %}

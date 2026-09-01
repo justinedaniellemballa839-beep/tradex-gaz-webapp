@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'comptes',
     'core',
     'catalogue',
+    'commandes',
 ]
 AUTH_USER_MODEL = 'comptes.Utilisateur'
 
