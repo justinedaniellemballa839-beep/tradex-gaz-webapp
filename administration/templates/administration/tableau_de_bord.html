@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de bord - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Tableau de bord administrateur</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-center p-3 shadow-sm">
+            <h2>{{ nombre_utilisateurs }}</h2>
+            <p class="text-muted mb-0">Utilisateurs</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3 shadow-sm">
+            <h2>{{ nombre_commandes }}</h2>
+            <p class="text-muted mb-0">Commandes totales</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3 shadow-sm">
+            <h2 class="text-warning">{{ commandes_en_attente }}</h2>
+            <p class="text-muted mb-0">En attente de paiement</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3 shadow-sm">
+            <h2 class="text-danger">{{ produits_en_rupture }}</h2>
+            <p class="text-muted mb-0">Produits en rupture</p>
+        </div>
+    </div>
+</div>
+
+<div class="text-center">
+    <a href="{% url 'gerer_comptes' %}" class="btn btn-primary m-1">Gérer les comptes</a>
+    <a href="{% url 'rapports_globaux' %}" class="btn btn-primary m-1">Rapports globaux</a>
+    <a href="{% url 'gerer_livraisons' %}" class="btn btn-primary m-1">Gérer les livraisons</a>
+</div>
+{% endblock %}

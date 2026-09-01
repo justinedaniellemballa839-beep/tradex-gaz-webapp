@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Rapports globaux - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Rapports globaux</h1>
+<h5>Ventes par produit (commandes confirmées, en livraison ou livrées)</h5>
+
+<table class="table">
+    <thead><tr><th>Produit</th><th>Quantité totale vendue</th><th>Nombre de commandes</th></tr></thead>
+    <tbody>
+        {% for v in ventes_par_produit %}
+        <tr>
+            <td>{{ v.lignes__produit__nom }}</td>
+            <td>{{ v.quantite_totale }}</td>
+            <td>{{ v.nombre_commandes }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="text-center text-muted">Pas encore de ventes confirmées.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

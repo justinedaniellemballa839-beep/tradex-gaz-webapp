@@ -10,6 +10,8 @@ urlpatterns = [
     path('catalogue/', include('catalogue.urls')),
     path('commandes/', include('commandes.urls')),
     path('livraison/', include('livraison.urls')),
+    path('administration/', include('administration.urls')),
+    path('chatbot/', include('chatbot.urls')),
 ]
 
 if settings.DEBUG:

@@ -27,6 +27,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'historique_commandes' %}">Mes commandes</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'chat' %}">Assistant</a>
+                    </li>
                     {% endif %}
                     {% if user.is_authenticated and user.role == 'gerant_station' %}
                     <li class="nav-item dropdown">
@@ -45,6 +48,19 @@
                     {% if user.is_authenticated and user.role == 'livreur' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'liste_livraisons' %}">Espace livreur</a>
+                    </li>
+                    {% endif %}
+                    {% if user.is_authenticated and user.role == 'administrateur' %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="menuAdmin" role="button" data-bs-toggle="dropdown">
+                            Espace admin
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'tableau_de_bord' %}">Tableau de bord</a></li>
+                            <li><a class="dropdown-item" href="{% url 'gerer_comptes' %}">Comptes utilisateurs</a></li>
+                            <li><a class="dropdown-item" href="{% url 'rapports_globaux' %}">Rapports globaux</a></li>
+                            <li><a class="dropdown-item" href="{% url 'gerer_livraisons' %}">Livraisons</a></li>
+                        </ul>
                     </li>
                     {% endif %}
                 </ul>

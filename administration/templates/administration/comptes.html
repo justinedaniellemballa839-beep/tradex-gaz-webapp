@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Comptes utilisateurs - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Gérer les comptes utilisateurs</h1>
+
+<table class="table table-striped">
+    <thead><tr><th>Username</th><th>Email</th><th>Rôle</th><th>Actif</th><th>Action</th></tr></thead>
+    <tbody>
+        {% for u in utilisateurs %}
+        <tr>
+            <td>{{ u.username }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.get_role_display }}</td>
+            <td>{% if u.is_active %}✅{% else %}❌{% endif %}</td>
+            <td><a href="{% url 'modifier_compte' u.id %}" class="btn btn-sm btn-primary">Modifier</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

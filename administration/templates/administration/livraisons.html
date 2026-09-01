@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Gérer les livraisons - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Gérer les livraisons</h1>
+
+<table class="table table-striped">
+    <thead><tr><th>Commande</th><th>Livreur</th><th>Statut</th><th>Action</th></tr></thead>
+    <tbody>
+        {% for l in livraisons %}
+        <tr>
+            <td>#{{ l.commande.id }}</td>
+            <td>{{ l.livreur.username|default:"—" }}</td>
+            <td>{{ l.get_statut_display }}</td>
+            <td><a href="{% url 'modifier_statut_livraison' l.id %}" class="btn btn-sm btn-primary">Modifier</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

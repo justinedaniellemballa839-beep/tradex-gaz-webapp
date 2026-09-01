@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Assistant Tradex - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h1 class="mb-4 text-center">💬 Assistant Tradex</h1>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-body" style="min-height: 300px; max-height: 500px; overflow-y: auto;">
+                {% for tour in historique %}
+                    {% if tour.role == 'user' %}
+                        <div class="text-end mb-2">
+                            <span class="badge bg-primary p-2">{{ tour.text }}</span>
+                        </div>
+                    {% else %}
+                        <div class="text-start mb-2">
+                            <span class="badge bg-light text-dark border p-2">{{ tour.text }}</span>
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <p class="text-muted text-center">Pose une question sur nos produits, commandes, ou livraisons !</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <form method="post" class="d-flex gap-2">
+            {% csrf_token %}
+            <input type="text" name="message" class="form-control" placeholder="Écris ton message..." required autofocus>
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <a href="{% url 'reinitialiser_chat' %}" class="btn btn-sm btn-outline-secondary">🔄 Nouvelle conversation</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
