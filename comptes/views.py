@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib import messages
-from .forms import InscriptionForm
+from django.contrib.auth.decorators import login_required
+from .forms import InscriptionForm, ProfilForm
 
 
 def inscription(request):
@@ -20,8 +21,6 @@ def inscription(request):
         form = InscriptionForm()
 
     return render(request, 'comptes/inscription.html', {'form': form})
-from django.contrib.auth.decorators import login_required
-from .forms import ProfilForm
 
 
 @login_required

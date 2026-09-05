@@ -31,4 +31,10 @@
     </tbody>
 </table>
 <p class="text-end fw-bold fs-5">Total : {{ commande.montant_total }} FCFA</p>
+
+{% if commande.statut != 'en_attente' %}
+<div class="text-center mt-3">
+    <a href="{% url 'telecharger_recu' commande.id %}" class="btn btn-outline-primary">📄 Télécharger le reçu</a>
+</div>
+{% endif %}
 {% endblock %}
