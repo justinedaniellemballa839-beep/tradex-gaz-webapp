@@ -1,0 +1,45 @@
+<a href="{% url 'liste_produits' %}">Produits</a>
+<a href="{% url 'liste_points_distribution' %}">Points de distribution</a>
+
+{% if user.is_authenticated %}
+    <a href="{% url 'historique_commandes' %}">Mes commandes</a>
+    <a href="{% url 'chat' %}">Assistant</a>
+{% endif %}
+
+{% if user.is_authenticated and user.role == 'gerant_station' %}
+    <div class="mt-2 mb-1 fw-bold small text-uppercase" style="opacity: 0.7;">Espace gérant</div>
+    <a href="{% url 'gerer_stock' %}">Stock</a>
+    <a href="{% url 'gerer_approvisionnements' %}">Approvisionnements</a>
+    <a href="{% url 'alertes_stock' %}">Alertes de stock</a>
+    <a href="{% url 'previsions_demande' %}">Prévisions</a>
+    <a href="{% url 'gerer_avis' %}">Avis clients</a>
+    <a href="{% url 'attribuer_livraisons' %}">Attribuer livraisons</a>
+{% endif %}
+
+{% if user.is_authenticated and user.role == 'livreur' %}
+    <div class="mt-2 mb-1 fw-bold small text-uppercase" style="opacity: 0.7;">Espace livreur</div>
+    <a href="{% url 'mes_demandes' %}">Nouvelles demandes</a>
+    <a href="{% url 'liste_livraisons' %}">Mes livraisons</a>
+{% endif %}
+
+{% if user.is_authenticated and user.role == 'administrateur' %}
+    <div class="mt-2 mb-1 fw-bold small text-uppercase" style="opacity: 0.7;">Espace admin</div>
+    <a href="{% url 'tableau_de_bord' %}">Tableau de bord</a>
+    <a href="{% url 'gerer_comptes' %}">Comptes utilisateurs</a>
+    <a href="{% url 'rapports_globaux' %}">Rapports globaux</a>
+    <a href="{% url 'gerer_livraisons' %}">Livraisons</a>
+{% endif %}
+
+<hr style="border-color: rgba(255,255,255,0.3);">
+
+{% if user.is_authenticated %}
+    <div class="mb-2">Bonjour, {{ user.username }}</div>
+    <a href="{% url 'profil' %}">Mon profil</a>
+    <form method="post" action="{% url 'deconnexion' %}" class="mt-2">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-light btn-sm w-100">Se déconnecter</button>
+    </form>
+{% else %}
+    <a href="{% url 'connexion' %}" class="btn btn-outline-light btn-sm w-100 mb-2">Se connecter</a>
+    <a href="{% url 'inscription' %}" class="btn btn-light btn-sm w-100">S'inscrire</a>
+{% endif %}

@@ -14,10 +14,18 @@ class Commande(models.Model):
         EN_LIVRAISON = 'en_livraison', 'En cours de livraison'
         LIVREE = 'livree', 'Livrée'
         ANNULEE = 'annulee', 'Annulée'
+    class ModeLivraison(models.TextChoices):
+        LIVRAISON = 'livraison', 'Livraison à domicile'
+        RETRAIT = 'retrait', 'Retrait à l\'entrepôt'
+
+    mode_livraison = models.CharField(
+        max_length=20, choices=ModeLivraison.choices,
+        default=ModeLivraison.LIVRAISON, verbose_name="Mode de récupération"
+    )
 
     client = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='commandes')
     point_distribution = models.ForeignKey(PointDistribution, on_delete=models.SET_NULL, null=True, blank=True)
-    adresse_livraison = models.CharField(max_length=255, verbose_name="Adresse de livraison")
+    adresse_livraison = models.CharField(max_length=255, blank=True, verbose_name="Adresse de livraison")
     statut = models.CharField(max_length=20, choices=Statut.choices, default=Statut.EN_ATTENTE)
     date_creation = models.DateTimeField(auto_now_add=True)
     delai_estime_heures = models.PositiveIntegerField(default=24, verbose_name="Délai estimé (heures)")

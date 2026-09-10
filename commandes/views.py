@@ -56,8 +56,9 @@ def effectuer_paiement(request, commande_id):
             commande.statut = Commande.Statut.CONFIRMEE
             commande.save()
 
-            from livraison.models import Livraison
-            Livraison.objects.get_or_create(commande=commande)
+            if commande.mode_livraison == Commande.ModeLivraison.LIVRAISON:
+                from livraison.models import Livraison
+                Livraison.objects.get_or_create(commande=commande)
 
             messages.success(request, "Paiement validé ! Ta commande est confirmée.")
             return redirect('detail_commande', commande_id=commande.id)
@@ -104,14 +105,17 @@ def telecharger_recu(request, commande_id):
 
     p.setFont("Helvetica", 11)
     y = hauteur - 100
-    p.drawString(50, y, f"Commande n : {commande.id}")
+    p.drawString(50, y, f"Commande : CMD-{commande.id:06d}")
     y -= 20
     p.drawString(50, y, f"Client : {commande.client.username}")
     y -= 20
     p.drawString(50, y, f"Date de commande : {commande.date_creation.strftime('%d/%m/%Y %H:%M')}")
     y -= 20
-    p.drawString(50, y, f"Adresse de livraison : {commande.adresse_livraison}")
+    p.drawString(50, y, f"Mode : {commande.get_mode_livraison_display()}")
     y -= 20
+    if commande.adresse_livraison:
+        p.drawString(50, y, f"Adresse de livraison : {commande.adresse_livraison}")
+        y -= 20
     p.drawString(50, y, f"Methode de paiement : {commande.paiement.get_methode_display()}")
     y -= 20
     p.drawString(50, y, f"Reference : {commande.paiement.reference or 'N/A'}")

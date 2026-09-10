@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Attribuer les livraisons - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Attribuer les livraisons</h1>
+
+{% for livraison in en_attente %}
+<div class="card p-3 mb-3 shadow-sm">
+    <p class="mb-2"><strong>CMD-{{ livraison.commande.id|stringformat:"06d" }}</strong> — {{ livraison.commande.adresse_livraison }}</p>
+    <form method="post" class="d-flex gap-2">
+        {% csrf_token %}
+        <input type="hidden" name="livraison_id" value="{{ livraison.id }}">
+        <select name="livreur_id" class="form-select" required>
+            <option value="">-- Choisir un livreur --</option>
+            {% for livreur in livreurs %}
+                <option value="{{ livreur.id }}">{{ livreur.username }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Attribuer</button>
+    </form>
+</div>
+{% empty %}
+<p class="text-center text-muted">Aucune livraison en attente d'attribution.</p>
+{% endfor %}
+{% endblock %}

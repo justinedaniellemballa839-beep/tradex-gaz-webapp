@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load l10n %}
 
 {% block title %}Points de distribution - Tradex Distrib'IA{% endblock %}
 
@@ -39,8 +40,8 @@
                 nom: "{{ point.nom|escapejs }}",
                 ville: "{{ point.ville|escapejs }}",
                 quartier: "{{ point.quartier|escapejs }}",
-                lat: {{ point.latitude }},
-                lng: {{ point.longitude }}
+                lat: {{ point.latitude|unlocalize }},
+                lng: {{ point.longitude|unlocalize }}
             },
             {% endif %}
         {% endfor %}

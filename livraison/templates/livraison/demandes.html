@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Demandes de livraison - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Nouvelles demandes de livraison</h1>
+
+{% for livraison in demandes %}
+<div class="card p-3 mb-3 shadow-sm">
+    <p class="mb-2"><strong>CMD-{{ livraison.commande.id|stringformat:"06d" }}</strong> — {{ livraison.commande.adresse_livraison }}</p>
+    <div class="d-flex gap-2">
+        <form method="post" action="{% url 'accepter_livraison' livraison.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">✅ Accepter</button>
+        </form>
+        <form method="post" action="{% url 'refuser_livraison' livraison.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger">❌ Refuser</button>
+        </form>
+    </div>
+</div>
+{% empty %}
+<p class="text-center text-muted">Aucune nouvelle demande pour le moment.</p>
+{% endfor %}
+{% endblock %}

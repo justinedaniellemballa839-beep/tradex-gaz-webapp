@@ -10,7 +10,7 @@
     <tbody>
         {% for l in livraisons %}
         <tr>
-            <td>#{{ l.commande.id }}</td>
+            <td>CMD-{{ l.commande.id|stringformat:"06d" }}</td>
             <td>{{ l.livreur.username|default:"—" }}</td>
             <td>{{ l.get_statut_display }}</td>
             <td><a href="{% url 'modifier_statut_livraison' l.id %}" class="btn btn-sm btn-primary">Modifier</a></td>

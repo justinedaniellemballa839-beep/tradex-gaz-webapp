@@ -9,7 +9,7 @@
     {% for commande in commandes %}
     <a href="{% url 'detail_commande' commande.id %}" class="list-group-item list-group-item-action">
         <div class="d-flex justify-content-between">
-            <span>Commande #{{ commande.id }} — {{ commande.date_creation|date:"d/m/Y" }}</span>
+            <span>Commande CMD-{{ commande.id|stringformat:"06d" }} — {{ commande.date_creation|date:"d/m/Y" }}</span>
             <span class="badge bg-info text-dark">{{ commande.get_statut_display }}</span>
         </div>
     </a>

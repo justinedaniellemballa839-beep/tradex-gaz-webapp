@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load l10n %}
+{% load static %}
+
+{% block title %}Suivi de livraison - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Suivi de ta livraison</h1>
+
+<p class="text-center" id="statut-livraison">
+    <span class="badge bg-info text-dark">{{ livraison.get_statut_display }}</span>
+</p>
+<p class="text-center text-muted small" id="statut-precision"></p>
+
+<div id="carte-suivi" style="height: 450px;" class="rounded shadow-sm mb-4"></div>
+
+<script>
+    const carte = L.map('carte-suivi').setView([3.8667, 11.5167], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(carte);
+
+    const iconeMoto = L.divIcon({
+        html: `
+            <div class="halo-clignotant"></div>
+            <img src="{% static 'images/moto-livreur.jpeg' %}" class="img-moto-livreur">
+        `,
+        className: 'icone-moto',
+        iconSize: [46, 46],
+        iconAnchor: [23, 40],
+    });
+
+    let marqueurLivreur = null;
+    let cerclePrecision = null;
+
+    function rafraichirPosition() {
+        fetch("{% url 'position_actuelle' livraison.id %}")
+            .then(response => response.json())
+            .then(data => {
+                if (data.lat && data.lng) {
+                    if (marqueurLivreur === null) {
+                        marqueurLivreur = L.marker([data.lat, data.lng], { icon: iconeMoto }).addTo(carte);
+                        cerclePrecision = L.circle([data.lat, data.lng], {
+                            radius: data.precision || 20,
+                            color: '#972E25',
+                            fillColor: '#972E25',
+                            fillOpacity: 0.1,
+                            weight: 1,
+                        }).addTo(carte);
+                        carte.setView([data.lat, data.lng], 15);
+                    } else {
+                        marqueurLivreur.setLatLng([data.lat, data.lng]);
+                        cerclePrecision.setLatLng([data.lat, data.lng]);
+                        if (data.precision) cerclePrecision.setRadius(data.precision);
+                    }
+
+                    if (data.precision) {
+                        document.getElementById('statut-precision').textContent =
+                            `Précision GPS : ±${Math.round(data.precision)} mètres`;
+                    }
+                }
+
+                if (data.statut === 'livree') {
+                    document.getElementById('statut-livraison').innerHTML =
+                        '<span class="badge bg-success">✅ Livrée</span>';
+                }
+            });
+    }
+
+    rafraichirPosition();
+    setInterval(rafraichirPosition, 5000);
+</script>
+
+<style>
+    .icone-moto {
+        position: relative;
+    }
+    .img-moto-livreur {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 2px solid #972E25;
+        object-fit: cover;
+        background: white;
+    }
+    .halo-clignotant {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #972E25;
+        opacity: 0.6;
+        animation: clignoter 1.5s ease-in-out infinite;
+    }
+    @keyframes clignoter {
+        0% { transform: scale(1); opacity: 0.6; }
+        70% { transform: scale(2.2); opacity: 0; }
+        100% { transform: scale(2.2); opacity: 0; }
+    }
+</style>
+{% endblock %}

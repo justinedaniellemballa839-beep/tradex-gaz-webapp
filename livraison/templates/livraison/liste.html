@@ -8,7 +8,7 @@
 {% for livraison in mes_livraisons %}
 <div class="card p-3 mb-2 shadow-sm">
     <div class="d-flex justify-content-between align-items-center">
-        <span>Commande #{{ livraison.commande.id }} — {{ livraison.commande.adresse_livraison }}</span>
+        <span>Commande CMD-{{ livraison.commande.id|stringformat:"06d" }} — {{ livraison.commande.adresse_livraison }}</span>
         <a href="{% url 'detail_livraison' livraison.id %}" class="btn btn-sm btn-primary">Voir</a>
     </div>
 </div>
@@ -21,7 +21,7 @@
 {% for livraison in en_attente %}
 <div class="card p-3 mb-2 shadow-sm">
     <div class="d-flex justify-content-between align-items-center">
-        <span>Commande #{{ livraison.commande.id }} — {{ livraison.commande.adresse_livraison }}</span>
+        <span>Commande CMD-{{ livraison.commande.id|stringformat:"06d" }} — {{ livraison.commande.adresse_livraison }}</span>
         <form method="post" action="{% url 'prendre_en_charge' livraison.id %}">
             {% csrf_token %}
             <button type="submit" class="btn btn-sm btn-success">Prendre en charge</button>

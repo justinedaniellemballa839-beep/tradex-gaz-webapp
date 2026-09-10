@@ -4,5 +4,5 @@ from .models import Livraison
 
 @admin.register(Livraison)
 class LivraisonAdmin(admin.ModelAdmin):
-    list_display = ('commande', 'livreur', 'statut', 'date_prise_en_charge', 'date_livraison')
+    list_display = ('commande', 'livreur', 'statut', 'date_assignation', 'date_acceptation', 'date_livraison')
     list_filter = ('statut',)

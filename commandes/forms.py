@@ -19,7 +19,20 @@ class CommandeForm(forms.ModelForm):
 
     class Meta:
         model = Commande
-        fields = ('point_distribution', 'adresse_livraison')
+        fields = ('mode_livraison', 'point_distribution', 'adresse_livraison')
+        widgets = {
+            'mode_livraison': forms.RadioSelect,
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        mode = cleaned_data.get('mode_livraison')
+        adresse = (cleaned_data.get('adresse_livraison') or '').strip()
+
+        if mode == Commande.ModeLivraison.LIVRAISON and not adresse:
+            self.add_error('adresse_livraison', "L'adresse est obligatoire pour une livraison à domicile.")
+
+        return cleaned_data
 
 
 class PaiementForm(forms.ModelForm):

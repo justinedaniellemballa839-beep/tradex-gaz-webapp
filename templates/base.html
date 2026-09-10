@@ -10,128 +10,93 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         :root {
-            --tradex-rouge: #972E25;   /* RAL 3013 */
+            --tradex-rouge: #972E25;
             --tradex-rouge-fonce: #6E2124;
-            --tradex-blanc: #F1ECE1;  /* RAL 9010 */
+            --tradex-blanc: #F1ECE1;
         }
-        body {
-            background-color: var(--tradex-blanc);
+        body { background-color: var(--tradex-blanc); margin: 0; }
+        .btn-primary { background-color: var(--tradex-rouge) !important; border-color: var(--tradex-rouge) !important; }
+        .btn-primary:hover { background-color: var(--tradex-rouge-fonce) !important; border-color: var(--tradex-rouge-fonce) !important; }
+        .text-primary { color: var(--tradex-rouge) !important; }
+        .card { background-color: #ffffff; }
+
+        .sidebar {
+            width: 230px;
+            background-color: var(--tradex-rouge);
+            color: var(--tradex-blanc);
+            min-height: 100vh;
+            flex-shrink: 0;
+            overflow-y: auto;
         }
-        .navbar.bg-primary {
-            background-color: var(--tradex-rouge) !important;
+        .sidebar .brand { font-size: 1.4rem; font-weight: bold; }
+        .sidebar .brand small { display: block; font-size: 0.7rem; opacity: 0.8; font-weight: normal; }
+        .sidebar a { color: var(--tradex-blanc); text-decoration: none; display: block; padding: 0.4rem 0; }
+        .sidebar a:hover { opacity: 0.8; }
+        .sidebar .lieu {
+            font-size: 0.85rem; opacity: 0.85;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            padding-top: 1rem; margin-top: 1rem;
         }
-        .btn-primary {
-            background-color: var(--tradex-rouge) !important;
-            border-color: var(--tradex-rouge) !important;
+        .hero-bandeau {
+            position: relative;
+            background: linear-gradient(135deg, var(--tradex-rouge), var(--tradex-rouge-fonce));
+            color: var(--tradex-blanc);
+            overflow: hidden;
+            border-radius: 0 0 0.5rem 0.5rem;
         }
-        .btn-primary:hover {
-            background-color: var(--tradex-rouge-fonce) !important;
-            border-color: var(--tradex-rouge-fonce) !important;
-        }
-        .btn-outline-light:hover {
-            color: var(--tradex-rouge) !important;
-        }
-        .text-primary {
-            color: var(--tradex-rouge) !important;
-        }
-        .card {
-            background-color: #ffffff;
-        }
+        .hero-bandeau img { position: absolute; right: -30px; bottom: -20px; height: 180px; opacity: 0.9; }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
+
+    <nav class="navbar navbar-expand-lg navbar-dark d-lg-none" style="background-color: var(--tradex-rouge);">
+        <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'accueil' %}">Tradex Distrib'IA</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuMobile">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="menuPrincipal">
-                <ul class="navbar-nav me-auto mt-2 mt-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'liste_produits' %}">Produits</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'liste_points_distribution' %}">Points de distribution</a>
-                    </li>
-                    {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'historique_commandes' %}">Mes commandes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'chat' %}">Assistant</a>
-                    </li>
-                    {% endif %}
-                    {% if user.is_authenticated and user.role == 'gerant_station' %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="menuGerant" role="button" data-bs-toggle="dropdown">
-                            Espace gérant
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'gerer_stock' %}">Stock</a></li>
-                            <li><a class="dropdown-item" href="{% url 'gerer_approvisionnements' %}">Approvisionnements</a></li>
-                            <li><a class="dropdown-item" href="{% url 'alertes_stock' %}">Alertes de stock</a></li>
-                            <li><a class="dropdown-item" href="{% url 'previsions_demande' %}">Prévisions</a></li>
-                            <li><a class="dropdown-item" href="{% url 'gerer_avis' %}">Avis clients</a></li>
-                        </ul>
-                    </li>
-                    {% endif %}
-                    {% if user.is_authenticated and user.role == 'livreur' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'liste_livraisons' %}">Espace livreur</a>
-                    </li>
-                    {% endif %}
-                    {% if user.is_authenticated and user.role == 'administrateur' %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="menuAdmin" role="button" data-bs-toggle="dropdown">
-                            Espace admin
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'tableau_de_bord' %}">Tableau de bord</a></li>
-                            <li><a class="dropdown-item" href="{% url 'gerer_comptes' %}">Comptes utilisateurs</a></li>
-                            <li><a class="dropdown-item" href="{% url 'rapports_globaux' %}">Rapports globaux</a></li>
-                            <li><a class="dropdown-item" href="{% url 'gerer_livraisons' %}">Livraisons</a></li>
-                        </ul>
-                    </li>
-                    {% endif %}
-                </ul>
-                <ul class="navbar-nav align-items-lg-center gap-lg-2 mt-3 mt-lg-0">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item text-white mb-2 mb-lg-0">Bonjour, {{ user.username }}</li>
-                        <li class="nav-item mb-2 mb-lg-0">
-                            <a href="{% url 'profil' %}" class="btn btn-outline-light btn-sm w-100">Mon profil</a>
-                        </li>
-                        <li class="nav-item">
-                            <form method="post" action="{% url 'deconnexion' %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-light btn-sm w-100">Se déconnecter</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li class="nav-item mb-2 mb-lg-0">
-                            <a href="{% url 'connexion' %}" class="btn btn-outline-light btn-sm w-100">Se connecter</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'inscription' %}" class="btn btn-light btn-sm w-100">S'inscrire</a>
-                        </li>
-                    {% endif %}
-                </ul>
+            <div class="collapse navbar-collapse" id="menuMobile">
+                {% include 'partials/liens_navigation.html' %}
             </div>
         </div>
     </nav>
-    <main class="container mt-4">
-        {% block content %}
-        {% endblock %}
-    </main>
-        <footer class="mt-5 py-4" style="background-color: var(--tradex-rouge); color: var(--tradex-blanc);">
-        <div class="container text-center">
-            <p class="mb-1 fw-bold">Tradex Distrib'IA</p>
-            <p class="mb-1 small">Distribution intelligente de gaz domestique au Cameroun</p>
-                        <p class="mb-0 small">📍 Livraison disponible à Yaoundé</p>
-            <p class="mb-0 small mt-2">&copy; {% now "Y" %} Tradex Distrib'IA. Tous droits réservés.</p>
+
+    <div class="d-flex">
+        <aside class="sidebar d-none d-lg-flex flex-column p-3">
+            <div class="brand mb-4">
+                Tradex
+                <small>Plus proche de vous</small>
+            </div>
+            {% include 'partials/liens_navigation.html' %}
+            <div class="mt-auto lieu">📍 Yaoundé</div>
+        </aside>
+
+        <div class="flex-grow-1" style="min-width: 0;">
+            <div class="hero-bandeau px-4 py-3 m-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-bold fs-5">Tradex Distrib'IA</div>
+                    <div class="small">L'énergie qui vous rapproche</div>
+                </div>
+                <img src="{% static 'images/tradex-illustration.svg' %}" alt="">
+            </div>
+
+            <main class="container-fluid px-4">
+                {% block content %}
+                {% endblock %}
+            </main>
+
+            <footer class="mt-5 py-4" style="background-color: var(--tradex-rouge); color: var(--tradex-blanc);">
+                <div class="container text-center">
+                    <p class="mb-1 fw-bold">Tradex Distrib'IA</p>
+                    <p class="mb-1 small">Distribution intelligente de gaz domestique au Cameroun</p>
+                    <p class="mb-0 small">📍 Livraison disponible à Yaoundé</p>
+                    <p class="mb-0 small mt-2">&copy; {% now "Y" %} Tradex Distrib'IA. Tous droits réservés.</p>
+                </div>
+            </footer>
         </div>
-    </footer>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

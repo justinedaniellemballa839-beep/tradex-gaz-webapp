@@ -5,11 +5,13 @@ from commandes.models import Commande
 
 class Livraison(models.Model):
     """
-    Le suivi de livraison d'une commande, géré par un livreur.
-    Créée automatiquement dès qu'une commande est payée.
+    Le suivi de livraison d'une commande.
+    Nouveau flux : le gérant attribue la livraison à un livreur précis,
+    qui doit ensuite l'accepter avant de commencer à livrer.
     """
     class Statut(models.TextChoices):
-        EN_ATTENTE = 'en_attente', 'En attente d\'un livreur'
+        EN_ATTENTE = 'en_attente', 'En attente d\'attribution'
+        ASSIGNEE = 'assignee', 'Assignée, en attente d\'acceptation'
         EN_COURS = 'en_cours', 'En cours de livraison'
         LIVREE = 'livree', 'Livrée'
 
@@ -19,8 +21,14 @@ class Livraison(models.Model):
         limit_choices_to={'role': 'livreur'}, related_name='livraisons'
     )
     statut = models.CharField(max_length=20, choices=Statut.choices, default=Statut.EN_ATTENTE)
-    date_prise_en_charge = models.DateTimeField(null=True, blank=True)
+    date_assignation = models.DateTimeField(null=True, blank=True)
+    date_acceptation = models.DateTimeField(null=True, blank=True)
     date_livraison = models.DateTimeField(null=True, blank=True)
+
+    # Position en temps réel du livreur (mise à jour pendant la course)
+    position_lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    position_lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    position_precision = models.FloatField(null=True, blank=True, help_text="Précision GPS en mètres")
 
     def __str__(self):
         return f"Livraison commande #{self.commande.id} - {self.get_statut_display()}"

@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Livraison #{{ livraison.id }} - Tradex Distrib'IA{% endblock %}
+{% block title %}Livraison - Tradex Distrib'IA{% endblock %}
 
 {% block content %}
-<h1 class="mb-4 text-center">Livraison - Commande #{{ livraison.commande.id }}</h1>
+<h1 class="mb-4 text-center">Livraison - Commande CMD-{{ livraison.commande.id|stringformat:"06d" }}</h1>
 
 <div class="card p-4 shadow-sm mb-4">
     <p><strong>📍 Adresse (localiser lieu de livraison) :</strong> {{ livraison.commande.adresse_livraison }}</p>
@@ -16,6 +16,7 @@
         {% endif %}
     </p>
     <p><strong>Statut :</strong> {{ livraison.get_statut_display }}</p>
+    <p id="statut-gps" class="small text-muted mb-0">📡 Partage de position GPS : en attente...</p>
 </div>
 
 <h5>Produits à livrer</h5>
@@ -33,4 +34,43 @@
 {% else %}
 <p class="text-center text-success fw-bold">✅ Livraison confirmée</p>
 {% endif %}
+
+<script>
+    function getCookie(name) {
+        const valeur = document.cookie.split('; ').find(row => row.startsWith(name + '='));
+        return valeur ? valeur.split('=')[1] : null;
+    }
+    const csrftoken = getCookie('csrftoken');
+    const statutGps = document.getElementById('statut-gps');
+
+         function envoyerPosition(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const precision = position.coords.accuracy;
+
+        fetch("{% url 'mettre_a_jour_position' livraison.id %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken,
+            },
+            body: `lat=${lat}&lng=${lng}&precision=${precision}`,
+        }).then(() => {
+            statutGps.textContent = `📡 Position partagée (précision : ±${Math.round(precision)} m)`;
+        });
+    }
+
+    function erreurPosition(err) {
+        statutGps.textContent = "⚠️ Impossible d'accéder à ta position GPS : " + err.message;
+    }
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.watchPosition(envoyerPosition, erreurPosition, {
+            enableHighAccuracy: true,
+            maximumAge: 5000,
+        });
+    } else {
+        statutGps.textContent = "⚠️ Ton navigateur ne supporte pas la géolocalisation.";
+    }
+</script>
 {% endblock %}
