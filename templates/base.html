@@ -112,7 +112,9 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark d-lg-none" style="background-color: var(--tradex-rouge);">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'accueil' %}">Tradex Distrib'IA</a>
+            <a class="navbar-brand bg-white rounded-3 p-1 me-2" href="{% url 'accueil' %}" title="Retour à l'accueil">
+                <img src="{% static 'images/logo.jpeg' %}" alt="Tradex Distrib'IA, retour à l'accueil" height="40" class="d-block">
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuMobile">
                 <span class="navbar-toggler-icon"></span>
             </button>
