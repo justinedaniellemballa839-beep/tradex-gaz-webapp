@@ -19,7 +19,7 @@
     <p id="statut-gps" class="small text-muted mb-0">📡 Partage de position GPS : en attente...</p>
 </div>
 
-<h5>Produits à livrer</h5>
+<h2 class="h5">Produits à livrer</h2>
 <ul class="list-group mb-4">
     {% for ligne in livraison.commande.lignes.all %}
     <li class="list-group-item">{{ ligne.quantite }} x {{ ligne.produit.nom }}</li>
