@@ -14,6 +14,7 @@ class Commande(models.Model):
         EN_LIVRAISON = 'en_livraison', 'En cours de livraison'
         LIVREE = 'livree', 'Livrée'
         ANNULEE = 'annulee', 'Annulée'
+
     class ModeLivraison(models.TextChoices):
         LIVRAISON = 'livraison', 'Livraison à domicile'
         RETRAIT = 'retrait', 'Retrait à l\'entrepôt'
@@ -66,8 +67,8 @@ class LigneCommande(models.Model):
 class Paiement(models.Model):
     """
     Cas d'utilisation "effectuer paiement".
-    Pour l'instant simulé (pas encore branché à une vraie API paiement,
-    ce sera fait en Phase 8 avec un fournisseur Mobile Money).
+    Simulé pour l'instant (pas de vraie API Mobile Money, décision assumée),
+    mais avec un vrai flux en 2 étapes (code de confirmation) pour plus de réalisme.
     """
     class Methode(models.TextChoices):
         ORANGE_MONEY = 'orange_money', 'Orange Money'
@@ -88,3 +89,9 @@ class Paiement(models.Model):
 
     def __str__(self):
         return f"Paiement #{self.id} - {self.get_statut_display()}"
+
+    def numero_masque(self):
+        """Affiche le numéro partiellement caché, jamais en entier (ex: 67***456)."""
+        if not self.numero_telephone or len(self.numero_telephone) < 6:
+            return self.numero_telephone or ''
+        return f"{self.numero_telephone[:2]}***{self.numero_telephone[-3:]}"

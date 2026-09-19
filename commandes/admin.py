@@ -16,5 +16,6 @@ class CommandeAdmin(admin.ModelAdmin):
 
 @admin.register(Paiement)
 class PaiementAdmin(admin.ModelAdmin):
-    list_display = ('commande', 'methode', 'statut', 'date_paiement')
+    list_display = ('commande', 'methode', 'numero_masque', 'statut', 'date_paiement')
     list_filter = ('methode', 'statut')
+    readonly_fields = ('numero_telephone',)

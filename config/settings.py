@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'livraison',
     'administration',
     'chatbot',
+    'notifications',
 ]
 
 AUTH_USER_MODEL = 'comptes.Utilisateur'

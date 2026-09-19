@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.utils import timezone
 from comptes.decorators import role_required
+from notifications.services import notifier
 from .models import Livraison
 
 
@@ -22,6 +23,13 @@ def attribuer_livraisons(request):
         livraison.statut = Livraison.Statut.ASSIGNEE
         livraison.date_assignation = timezone.now()
         livraison.save()
+
+        notifier(
+            livreur,
+            "Nouvelle livraison assignée",
+            f"On t'a attribué la livraison CMD-{livraison.commande.id:06d}.",
+            lien=f'/livraison/demandes/#demande-{livraison.id}',
+        )
 
         messages.success(request, f"Livraison assignée à {livreur.username}.")
         return redirect('attribuer_livraisons')
@@ -44,6 +52,14 @@ def accepter_livraison(request, livraison_id):
     livraison.statut = Livraison.Statut.EN_COURS
     livraison.date_acceptation = timezone.now()
     livraison.save()
+
+    notifier(
+        livraison.commande.client,
+        "Livreur en route",
+        f"Un livreur a pris en charge ta commande CMD-{livraison.commande.id:06d}.",
+        lien=f'/livraison/suivi/{livraison.commande.id}/#suivi-{livraison.id}',
+    )
+
     messages.success(request, "Livraison acceptée, bonne route !")
     return redirect('detail_livraison', livraison_id=livraison.id)
 
@@ -100,6 +116,13 @@ def confirmer_livraison(request, livraison_id):
 
     livraison.commande.statut = livraison.commande.Statut.LIVREE
     livraison.commande.save()
+
+    notifier(
+        livraison.commande.client,
+        "Commande livrée",
+        f"Ta commande CMD-{livraison.commande.id:06d} a été livrée.",
+        lien=f'/commandes/{livraison.commande.id}/',
+    )
 
     messages.success(request, "Livraison confirmée !")
     return redirect('liste_livraisons')

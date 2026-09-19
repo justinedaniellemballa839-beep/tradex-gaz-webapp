@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from notifications.services import notifier_role
 from .forms import InscriptionForm, ProfilForm
 
 
@@ -15,6 +16,14 @@ def inscription(request):
         if form.is_valid():
             utilisateur = form.save()
             login(request, utilisateur)
+
+            notifier_role(
+                'administrateur',
+                "Nouvel utilisateur inscrit",
+                f"{utilisateur.username} vient de créer un compte.",
+                lien=f'/administration/comptes/#compte-{utilisateur.id}',
+            )
+
             messages.success(request, "Bienvenue ! Ton compte a été créé avec succès.")
             return redirect('accueil')
     else:

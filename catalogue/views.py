@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count
 from comptes.decorators import role_required
+from notifications.services import notifier_role
 from .models import ProduitGaz, PointDistribution, Approvisionnement, Avis
 from .forms import ApprovisionnementForm, StockForm, AvisForm
 from commandes.models import LigneCommande
@@ -142,6 +143,14 @@ def laisser_avis(request, produit_id):
             avis.produit = produit
             avis.client = request.user
             avis.save()
+
+            notifier_role(
+                'gerant_station',
+                "Nouvel avis client",
+                f"{request.user.username} a laissé un avis sur {produit.nom}.",
+                lien=f'/catalogue/gerant/avis/#avis-{avis.id}',
+            )
+
             messages.success(request, "Merci pour ton avis !")
             return redirect('liste_produits')
     else:

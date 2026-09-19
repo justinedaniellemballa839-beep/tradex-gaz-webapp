@@ -12,6 +12,7 @@ urlpatterns = [
     path('livraison/', include('livraison.urls')),
     path('administration/', include('administration.urls')),
     path('chatbot/', include('chatbot.urls')),
+    path('notifications/', include('notifications.urls')),
 ]
 
 if settings.DEBUG:

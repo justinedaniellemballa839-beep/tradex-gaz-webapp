@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -7,6 +8,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from .models import Commande, LigneCommande, Paiement
 from .forms import CommandeForm, PaiementForm
+from notifications.services import notifier, notifier_role
 
 
 @login_required
@@ -35,37 +37,115 @@ def passer_commande(request):
     return render(request, 'commandes/passer_commande.html', {'form': form})
 
 
+def _creer_livraison_si_necessaire(commande):
+    if commande.mode_livraison == Commande.ModeLivraison.LIVRAISON:
+        from livraison.models import Livraison
+        livraison, _ = Livraison.objects.get_or_create(commande=commande)
+        notifier_role(
+            'gerant_station',
+            "Nouvelle livraison à attribuer",
+            f"La commande CMD-{commande.id:06d} attend un livreur.",
+            lien=f'/livraison/attribuer/#livraison-{livraison.id}',
+        )
+
+
+def _decrementer_stock(commande):
+    """Diminue le stock de chaque produit commandé, une fois le paiement validé."""
+    for ligne in commande.lignes.all():
+        produit = ligne.produit
+        produit.stock_disponible = max(0, produit.stock_disponible - ligne.quantite)
+        produit.save()
+
+
+def _notifier_confirmation(commande):
+    notifier(
+        commande.client,
+        "Commande confirmée",
+        f"Ta commande CMD-{commande.id:06d} est confirmée.",
+        lien=f'/commandes/{commande.id}/#commande-{commande.id}',
+    )
+
+
 @login_required
 def effectuer_paiement(request, commande_id):
     """
     Cas d'utilisation "effectuer paiement".
-    Paiement simulé pour l'instant : on ne contacte pas encore
-    une vraie API Mobile Money (décision assumée, RCCM requis non disponible).
+    Mobile Money : un code de confirmation simulé est exigé (comme un vrai OTP).
+    Espèces : validation directe, pas d'OTP nécessaire (paiement à la livraison).
     """
     commande = get_object_or_404(Commande, id=commande_id, client=request.user)
 
     if request.method == 'POST':
         form = PaiementForm(request.POST)
         if form.is_valid():
-            paiement = form.save(commit=False)
-            paiement.commande = commande
-            paiement.statut = Paiement.Statut.VALIDE
-            paiement.date_paiement = timezone.now()
-            paiement.save()
+            methode = form.cleaned_data['methode']
+            numero = form.cleaned_data.get('numero_telephone')
 
-            commande.statut = Commande.Statut.CONFIRMEE
-            commande.save()
+            if methode == Paiement.Methode.ESPECES:
+                Paiement.objects.create(
+                    commande=commande,
+                    methode=methode,
+                    statut=Paiement.Statut.EN_ATTENTE,
+                )
+                commande.statut = Commande.Statut.CONFIRMEE
+                commande.save()
+                _creer_livraison_si_necessaire(commande)
+                _decrementer_stock(commande)
+                _notifier_confirmation(commande)
+                messages.success(request, "Commande confirmée, tu paieras en espèces à la livraison/au retrait.")
+                return redirect('detail_commande', commande_id=commande.id)
 
-            if commande.mode_livraison == Commande.ModeLivraison.LIVRAISON:
-                from livraison.models import Livraison
-                Livraison.objects.get_or_create(commande=commande)
+            code = f"{random.randint(1000, 9999)}"
+            request.session[f'otp_paiement_{commande.id}'] = code
+            request.session[f'otp_methode_{commande.id}'] = methode
+            request.session[f'otp_numero_{commande.id}'] = numero
+            request.session.modified = True
 
-            messages.success(request, "Paiement validé ! Ta commande est confirmée.")
-            return redirect('detail_commande', commande_id=commande.id)
+            messages.info(request, f"[SIMULATION] Code de confirmation envoyé par SMS au {numero} : {code}")
+            return redirect('confirmer_code_paiement', commande_id=commande.id)
     else:
         form = PaiementForm()
 
     return render(request, 'commandes/paiement.html', {'form': form, 'commande': commande})
+
+
+@login_required
+def confirmer_code_paiement(request, commande_id):
+    """Deuxième étape du paiement Mobile Money : saisie du code reçu (simulé) par SMS."""
+    commande = get_object_or_404(Commande, id=commande_id, client=request.user)
+    code_attendu = request.session.get(f'otp_paiement_{commande.id}')
+
+    if not code_attendu:
+        messages.error(request, "Aucune demande de paiement en attente. Recommence.")
+        return redirect('effectuer_paiement', commande_id=commande.id)
+
+    if request.method == 'POST':
+        code_saisi = request.POST.get('code', '').strip()
+        if code_saisi == code_attendu:
+            methode = request.session.pop(f'otp_methode_{commande.id}')
+            numero = request.session.pop(f'otp_numero_{commande.id}')
+            request.session.pop(f'otp_paiement_{commande.id}')
+
+            Paiement.objects.create(
+                commande=commande,
+                methode=methode,
+                numero_telephone=numero,
+                statut=Paiement.Statut.VALIDE,
+                date_paiement=timezone.now(),
+                reference=f"TDX-{commande.id}-{timezone.now().strftime('%Y%m%d%H%M%S')}",
+            )
+            commande.statut = Commande.Statut.CONFIRMEE
+            commande.save()
+            _creer_livraison_si_necessaire(commande)
+            _decrementer_stock(commande)
+            _notifier_confirmation(commande)
+
+            messages.success(request, "Paiement validé ! Ta commande est confirmée.")
+            return redirect('detail_commande', commande_id=commande.id)
+        else:
+            messages.error(request, "Code incorrect, réessaie.")
+
+    return render(request, 'commandes/confirmer_code.html', {'commande': commande})
 
 
 @login_required
@@ -118,9 +198,12 @@ def telecharger_recu(request, commande_id):
         y -= 20
     p.drawString(50, y, f"Methode de paiement : {commande.paiement.get_methode_display()}")
     y -= 20
+    if commande.paiement.numero_telephone:
+        p.drawString(50, y, f"Numero : {commande.paiement.numero_masque()}")
+        y -= 20
     p.drawString(50, y, f"Reference : {commande.paiement.reference or 'N/A'}")
     y -= 20
-    p.drawString(50, y, f"Date de paiement : {commande.paiement.date_paiement.strftime('%d/%m/%Y %H:%M')}")
+    p.drawString(50, y, f"Date de paiement : {commande.paiement.date_paiement.strftime('%d/%m/%Y %H:%M') if commande.paiement.date_paiement else 'N/A'}")
 
     y -= 40
     p.setFont("Helvetica-Bold", 12)
