@@ -247,16 +247,6 @@
                 setTimeout(() => cible.classList.remove('highlight-notif'), 2500);
             }
         }
-
-        // Si l'URL contient une ancre (#type-id), on scrolle dessus et on la met en surbrillance
-        if (window.location.hash) {
-            const cible = document.querySelector(window.location.hash);
-            if (cible) {
-                cible.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                cible.classList.add('highlight-notif');
-                setTimeout(() => cible.classList.remove('highlight-notif'), 2500);
-            }
-        }
     </script>
     {% endif %}
 </body>
