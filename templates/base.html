@@ -53,6 +53,27 @@
         .nav-titre { padding: 1rem 0.75rem 0.25rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
         .nav-bonjour { padding: 0 0.75rem; }
         .zone-messages { max-width: 720px; margin: 1rem auto 0; }
+        /* Palette Tradex appliquée aux composants Bootstrap restés bleus */
+        :root { --tradex-rouge-clair: #E58B82; --bs-primary: #972E25; --bs-primary-rgb: 151,46,37; --bs-link-color: #972E25; --bs-link-color-rgb: 151,46,37; --bs-link-hover-color: #6E2124; --bs-link-hover-color-rgb: 110,33,36; }
+        [data-bs-theme="dark"] { --bs-link-color: #E58B82; --bs-link-color-rgb: 229,139,130; --bs-link-hover-color: #F0A69F; --bs-link-hover-color-rgb: 240,166,159; }
+        [data-bs-theme="dark"] .text-primary { color: var(--tradex-rouge-clair) !important; }
+        .btn-outline-primary {
+            --bs-btn-color: var(--tradex-rouge); --bs-btn-border-color: var(--tradex-rouge);
+            --bs-btn-hover-color: #fff; --bs-btn-hover-bg: var(--tradex-rouge); --bs-btn-hover-border-color: var(--tradex-rouge);
+            --bs-btn-active-color: #fff; --bs-btn-active-bg: var(--tradex-rouge-fonce); --bs-btn-active-border-color: var(--tradex-rouge-fonce);
+            --bs-btn-disabled-color: var(--tradex-rouge); --bs-btn-disabled-border-color: var(--tradex-rouge);
+            --bs-btn-focus-shadow-rgb: 151,46,37;
+        }
+        [data-bs-theme="dark"] .btn-outline-primary {
+            --bs-btn-color: var(--tradex-rouge-clair); --bs-btn-border-color: var(--tradex-rouge-clair);
+            --bs-btn-hover-color: #17171a; --bs-btn-hover-bg: var(--tradex-rouge-clair); --bs-btn-hover-border-color: var(--tradex-rouge-clair);
+            --bs-btn-active-color: #17171a; --bs-btn-active-bg: #F0A69F; --bs-btn-active-border-color: #F0A69F;
+            --bs-btn-disabled-color: var(--tradex-rouge-clair); --bs-btn-disabled-border-color: var(--tradex-rouge-clair);
+            --bs-btn-focus-shadow-rgb: 229,139,130;
+        }
+        .form-control:focus, .form-select:focus, .form-check-input:focus { border-color: var(--tradex-rouge); box-shadow: 0 0 0 .25rem rgba(151,46,37,.25); }
+        [data-bs-theme="dark"] .form-control:focus, [data-bs-theme="dark"] .form-select:focus, [data-bs-theme="dark"] .form-check-input:focus { border-color: var(--tradex-rouge-clair); box-shadow: 0 0 0 .25rem rgba(229,139,130,.25); }
+        .form-check-input:checked { background-color: var(--tradex-rouge); border-color: var(--tradex-rouge); }
         .sidebar .lieu {
             font-size: 0.85rem; opacity: 0.85;
             border-top: 1px solid rgba(255,255,255,0.3);
