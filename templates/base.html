@@ -219,6 +219,13 @@
             return valeur ? valeur.split('=')[1] : null;
         }
 
+        // Échappe le HTML d'un texte avant de l'insérer dans la page
+        function echapper(texte) {
+            const div = document.createElement('div');
+            div.textContent = texte;
+            return div.innerHTML;
+        }
+
         function chargerNotifications() {
             fetch("{% url 'notifications_liste_json' %}")
                 .then(r => r.json())
@@ -237,9 +244,9 @@
 
                     panneauNotifs.innerHTML = data.notifications.map(n => `
                         <a href="/notifications/${n.id}/lue/" class="notif-item ${n.lue ? '' : 'non-lue'}">
-                            <div class="fw-bold small">${n.titre}</div>
-                            <div class="small">${n.message}</div>
-                            <div class="small text-muted">${n.date}</div>
+                            <div class="fw-bold small">${echapper(n.titre)}</div>
+                            <div class="small">${echapper(n.message)}</div>
+                            <div class="small text-muted">${echapper(n.date)}</div>
                         </a>
                     `).join('');
                 });
