@@ -7,7 +7,7 @@
 {% endif %}
 
 {% if user.is_authenticated and user.role == 'gerant_station' %}
-    <div class="mt-2 mb-1 fw-bold small text-uppercase" style="opacity: 0.7;">Espace gérant</div>
+    <div class="nav-titre">Espace gérant</div>
     <a href="{% url 'gerer_stock' %}">Stock</a>
     <a href="{% url 'gerer_approvisionnements' %}">Approvisionnements</a>
     <a href="{% url 'alertes_stock' %}">Alertes de stock</a>
@@ -17,13 +17,13 @@
 {% endif %}
 
 {% if user.is_authenticated and user.role == 'livreur' %}
-    <div class="mt-2 mb-1 fw-bold small text-uppercase" style="opacity: 0.7;">Espace livreur</div>
+    <div class="nav-titre">Espace livreur</div>
     <a href="{% url 'mes_demandes' %}">Nouvelles demandes</a>
     <a href="{% url 'liste_livraisons' %}">Mes livraisons</a>
 {% endif %}
 
 {% if user.is_authenticated and user.role == 'administrateur' %}
-    <div class="mt-2 mb-1 fw-bold small text-uppercase" style="opacity: 0.7;">Espace admin</div>
+    <div class="nav-titre">Espace admin</div>
     <a href="{% url 'tableau_de_bord' %}">Tableau de bord</a>
     <a href="{% url 'gerer_comptes' %}">Comptes utilisateurs</a>
     <a href="{% url 'rapports_globaux' %}">Rapports globaux</a>
@@ -33,7 +33,7 @@
 <hr style="border-color: rgba(255,255,255,0.3);">
 
 {% if user.is_authenticated %}
-    <div class="mb-2">Bonjour, {{ user.username }}</div>
+    <div class="nav-bonjour mb-2">Bonjour, {{ user.username }}</div>
     <a href="{% url 'profil' %}">Mon profil</a>
     <form method="post" action="{% url 'deconnexion' %}" class="mt-2">
         {% csrf_token %}
