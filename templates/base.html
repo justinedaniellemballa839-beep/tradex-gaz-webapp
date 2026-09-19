@@ -122,10 +122,9 @@
 
     <div class="d-flex">
         <aside class="sidebar d-none d-lg-flex flex-column p-3">
-            <div class="brand mb-4">
-                Tradex
-                <small>Plus proche de vous</small>
-            </div>
+            <a href="{% url 'accueil' %}" class="d-block bg-white rounded-3 p-2 mb-4" title="Retour à l'accueil">
+                <img src="{% static 'images/logo.jpeg' %}" alt="Tradex Distrib'IA, retour à l'accueil" class="img-fluid d-block mx-auto">
+            </a>
             {% include 'partials/liens_navigation.html' %}
             <div class="mt-auto lieu">📍 Yaoundé</div>
         </aside>
