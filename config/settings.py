@@ -122,3 +122,6 @@ LOGIN_REDIRECT_URL = 'accueil'
 LOGOUT_REDIRECT_URL = 'accueil'
 
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+
+# Envoie l'origine du site aux serveurs externes (exigé par les tuiles OpenStreetMap)
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
