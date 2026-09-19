@@ -54,6 +54,7 @@
         .sidebar a:not(.btn).actif, #menuMobile a:not(.btn).actif { background-color: rgba(255,255,255,0.2); font-weight: 600; }
         .nav-titre { padding: 1rem 0.75rem 0.25rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
         .nav-bonjour { padding: 0 0.75rem; }
+        .zone-messages { max-width: 720px; margin: 1rem auto 0; }
         .sidebar .lieu {
             font-size: 0.85rem; opacity: 0.85;
             border-top: 1px solid rgba(255,255,255,0.3);
@@ -163,6 +164,13 @@
             </div>
 
             <main class="container-fluid px-4">
+                {% if messages %}
+                <div class="zone-messages">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.level_tag == 'error' %}danger{% else %}{{ message.level_tag }}{% endif %} mb-2" role="alert">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
                 {% block content %}
                 {% endblock %}
             </main>

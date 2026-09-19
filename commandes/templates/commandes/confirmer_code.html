@@ -7,12 +7,6 @@
     <div class="col-md-5">
         <h1 class="mb-4 text-center">Confirmation du paiement</h1>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}info{% endif %}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-
         <p class="text-center text-muted">
             Un code à 4 chiffres a été envoyé par SMS (simulation).
             Saisis-le ci-dessous pour valider ton paiement.
