@@ -17,7 +17,7 @@
         <input type="hidden" name="avis_id" value="{{ a.id }}">
         <button type="submit" name="action" value="approuver" class="btn btn-sm btn-success">Approuver</button>
         <button type="submit" name="action" value="rejeter" class="btn btn-sm btn-secondary">Masquer</button>
-        <button type="submit" name="action" value="supprimer" class="btn btn-sm btn-danger">Supprimer</button>
+        <button type="submit" name="action" value="supprimer" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer définitivement cet avis ?');">Supprimer</button>
     </form>
 </div>
 {% empty %}
