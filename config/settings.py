@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
     'SECRET_KEY',
-    'django-insecure-)^i92)0-^gfs-tlnv7pk!(cndz$o&6gu^bk7vw)i%9@$r_@riw'
+    'django-insecure-)^i92)0-^gfs-tlnv7pk!(cndz\(o&6gu^bk7vw)i%9@\)r_@riw'
 )
 
 # DEBUG vaut True en local par défaut, False en production
@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary',
     'comptes',
     'core',
     'catalogue',
@@ -115,6 +117,9 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Configuration Cloudinary pour les médias en production et en local
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
