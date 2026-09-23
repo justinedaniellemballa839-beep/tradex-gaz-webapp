@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
     'SECRET_KEY',
-    'django-insecure-)^i92)0-^gfs-tlnv7pk!(cndz\(o&6gu^bk7vw)i%9@\)r_@riw'
+    'django-insecure-)^i92)0-^gfs-tlnv7pk!(cndz$o&6gu^bk7vw)i%9@$r_@riw'
 )
 
 # DEBUG vaut True en local par défaut, False en production
@@ -55,7 +55,6 @@ AUTH_USER_MODEL = 'comptes.Utilisateur'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
