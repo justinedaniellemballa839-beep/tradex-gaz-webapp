@@ -129,6 +129,19 @@
         .notif-item:hover { background: rgba(151,46,37,0.08); }
         .notif-item.non-lue { border-left: 3px solid var(--tradex-rouge); }
         .notif-vide { padding: 1rem; text-align: center; opacity: 0.7; font-size: 0.9rem; }
+        .panneau-parametres {
+            position: absolute; top: 48px; right: 0; width: 220px; padding: 0.25rem 0;
+            background: var(--bg-card); color: var(--texte);
+            border-radius: 0.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            display: none; z-index: 50;
+        }
+        .panneau-parametres.ouvert { display: block; }
+        .parametres-item {
+            display: block; width: 100%; text-align: left; padding: 0.6rem 0.9rem;
+            background: none; border: 0; color: var(--texte); text-decoration: none;
+            font-size: 0.95rem; cursor: pointer;
+        }
+        .parametres-item:hover, .parametres-item:focus-visible { background: rgba(151,46,37,0.08); }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -174,6 +187,17 @@
                         </button>
                         <div class="panneau-notifications" id="panneau-notifs">
                             <div class="notif-vide">Chargement...</div>
+                        </div>
+                    </div>
+                    <div style="position: relative;">
+                        <button class="bouton-outil" id="bouton-parametres" title="Paramètres" aria-label="Paramètres" aria-haspopup="true" aria-expanded="false" aria-controls="panneau-parametres">⚙️</button>
+                        <div class="panneau-parametres" id="panneau-parametres">
+                            <button type="button" class="parametres-item" id="parametres-theme">Changer de thème</button>
+                            <a class="parametres-item" href="{% url 'profil' %}">Mon profil</a>
+                            <form method="post" action="{% url 'deconnexion' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="parametres-item">Se déconnecter</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -290,6 +314,24 @@
 
         chargerNotifications();
         setInterval(chargerNotifications, 30000);
+
+        // Panneau des paramètres
+        const boutonParametres = document.getElementById('bouton-parametres');
+        const panneauParametres = document.getElementById('panneau-parametres');
+        function fermerParametres() {
+            panneauParametres.classList.remove('ouvert');
+            boutonParametres.setAttribute('aria-expanded', 'false');
+        }
+        boutonParametres.addEventListener('click', function(e) {
+            e.stopPropagation();
+            panneauNotifs.classList.remove('ouvert');
+            const ouvert = panneauParametres.classList.toggle('ouvert');
+            boutonParametres.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+        });
+        boutonCloche.addEventListener('click', fermerParametres);
+        document.addEventListener('click', fermerParametres);
+        panneauParametres.addEventListener('click', function(e) { e.stopPropagation(); });
+        document.getElementById('parametres-theme').addEventListener('click', function() { boutonTheme.click(); });
 
         // Si l'URL contient une ancre (#type-id), on scrolle dessus et on la met en surbrillance
         if (window.location.hash) {
