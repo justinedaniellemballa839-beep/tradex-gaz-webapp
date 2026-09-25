@@ -99,7 +99,10 @@ def previsions_demande(request):
     )
 
     from chatbot.services import analyser_previsions
-    analyse_ia = analyser_previsions(previsions)
+    try:
+        analyse_ia = analyser_previsions(previsions)
+    except Exception:
+        analyse_ia = "L'assistant IA est temporairement indisponible (forte demande sur le service). Réessaie dans quelques instants."
 
     return render(request, 'catalogue/gerant/previsions.html', {
         'previsions': previsions,
