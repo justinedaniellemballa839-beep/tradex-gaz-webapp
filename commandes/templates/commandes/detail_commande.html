@@ -7,6 +7,12 @@
 
 <div class="card p-4 shadow-sm mb-4">
     <p><strong>Statut :</strong> <span class="badge bg-info text-dark">{{ commande.get_statut_display }}</span></p>
+    {% if commande.statut == 'annulee' %}
+    <p class="text-muted small mb-0">Motif : {{ commande.motif_annulation }}</p>
+    {% if commande.montant_rembourse %}
+    <p class="text-success small mb-0">Remboursement : {{ commande.montant_rembourse }} FCFA ({{ commande.taux_remboursement }}%)</p>
+    {% endif %}
+    {% endif %}
     <p><strong>Délai estimé :</strong> {{ commande.delai_estime_heures }} heures</p>
     <p><strong>Adresse de livraison :</strong> {{ commande.adresse_livraison }}</p>
     {% if commande.point_distribution %}
@@ -30,11 +36,20 @@
         {% endfor %}
     </tbody>
 </table>
+{% if commande.frais_livraison %}
+<p class="text-end text-muted">Frais de livraison : {{ commande.frais_livraison }} FCFA</p>
+{% endif %}
 <p class="text-end fw-bold fs-5">Total : {{ commande.montant_total }} FCFA</p>
 
 {% if commande.statut != 'en_attente' %}
 <div class="text-center mt-3">
     <a href="{% url 'telecharger_recu' commande.id %}" class="btn btn-outline-primary">📄 Télécharger le reçu</a>
+</div>
+{% endif %}
+
+{% if commande.statut == 'en_attente' or commande.statut == 'confirmee' %}
+<div class="text-center mt-3">
+    <a href="{% url 'annuler_commande' commande.id %}" class="btn btn-outline-danger">Annuler la commande</a>
 </div>
 {% endif %}
 

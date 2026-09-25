@@ -7,7 +7,8 @@ from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from .models import Commande, LigneCommande, Paiement
-from .forms import CommandeForm, PaiementForm
+from .forms import CommandeForm, PaiementForm, AnnulationForm
+from .utils import calculer_frais_livraison
 from notifications.services import notifier, notifier_role
 
 
@@ -19,6 +20,14 @@ def passer_commande(request):
         if form.is_valid():
             commande = form.save(commit=False)
             commande.client = request.user
+
+            if commande.mode_livraison == Commande.ModeLivraison.LIVRAISON:
+                lat = request.POST.get('latitude_client')
+                lng = request.POST.get('longitude_client')
+                commande.latitude_client = lat or None
+                commande.longitude_client = lng or None
+                commande.frais_livraison = calculer_frais_livraison(lat, lng, commande.point_distribution)
+
             commande.save()
 
             produit = form.cleaned_data['produit']
@@ -155,6 +164,96 @@ def detail_commande(request, commande_id):
     return render(request, 'commandes/detail_commande.html', {'commande': commande})
 
 
+def _restituer_stock(commande):
+    for ligne in commande.lignes.all():
+        produit = ligne.produit
+        produit.stock_disponible += ligne.quantite
+        produit.save()
+
+
+def _calculer_taux_remboursement(commande):
+    """
+    85% si annulation >24h avant la livraison estimée, 70% entre 12h et 24h,
+    50% en dessous de 12h ou si la livraison est déjà en cours.
+    """
+    from livraison.models import Livraison
+    try:
+        livraison = commande.livraison
+        if livraison.statut == Livraison.Statut.EN_COURS:
+            return 50
+    except Livraison.DoesNotExist:
+        pass
+
+    delai_restant = (
+        commande.date_creation + timezone.timedelta(hours=commande.delai_estime_heures)
+    ) - timezone.now()
+    heures_restantes = delai_restant.total_seconds() / 3600
+
+    if heures_restantes >= 24:
+        return 85
+    elif heures_restantes >= 12:
+        return 70
+    else:
+        return 50
+
+
+@login_required
+def annuler_commande(request, commande_id):
+    """Politique d'annulation : remboursement dégressif selon le délai avant livraison."""
+    commande = get_object_or_404(Commande, id=commande_id, client=request.user)
+
+    if commande.statut not in (Commande.Statut.EN_ATTENTE, Commande.Statut.CONFIRMEE):
+        messages.error(request, "Cette commande ne peut plus être annulée.")
+        return redirect('detail_commande', commande_id=commande.id)
+
+    if request.method == 'POST':
+        form = AnnulationForm(request.POST)
+        if form.is_valid():
+            paiement_valide = hasattr(commande, 'paiement') and commande.paiement.statut == Paiement.Statut.VALIDE
+
+            if paiement_valide:
+                taux = _calculer_taux_remboursement(commande)
+                commande.taux_remboursement = taux
+                commande.montant_rembourse = commande.montant_total * taux / 100
+            else:
+                commande.taux_remboursement = None
+                commande.montant_rembourse = None
+
+            commande.statut = Commande.Statut.ANNULEE
+            commande.motif_annulation = form.cleaned_data['motif']
+            commande.date_annulation = timezone.now()
+            commande.save()
+
+            if paiement_valide:
+                _restituer_stock(commande)
+
+            from livraison.models import Livraison
+            try:
+                livraison = commande.livraison
+                if livraison.statut != Livraison.Statut.EN_COURS:
+                    livraison.statut = Livraison.Statut.ANNULEE
+                    livraison.save()
+            except Livraison.DoesNotExist:
+                pass
+
+            notifier_role(
+                'gerant_station',
+                "Commande annulée",
+                f"La commande CMD-{commande.id:06d} a été annulée par le client.",
+                lien=f'/commandes/{commande.id}/#commande-{commande.id}',
+            )
+
+            if commande.montant_rembourse:
+                messages.success(request, f"Commande annulée. Remboursement de {commande.montant_rembourse} FCFA ({commande.taux_remboursement}%) à traiter.")
+            else:
+                messages.success(request, "Commande annulée.")
+            return redirect('detail_commande', commande_id=commande.id)
+    else:
+        form = AnnulationForm()
+
+    return render(request, 'commandes/annuler.html', {'form': form, 'commande': commande})
+
+
 @login_required
 def historique_commandes(request):
     """Cas d'utilisation "consulter historique des commandes"."""
@@ -213,6 +312,10 @@ def telecharger_recu(request, commande_id):
     for ligne in commande.lignes.all():
         p.drawString(50, y, f"{ligne.quantite} x {ligne.produit.nom} - {ligne.sous_total} FCFA")
         y -= 18
+
+    if commande.frais_livraison:
+        p.drawString(50, y, f"Frais de livraison : {commande.frais_livraison} FCFA")
+        y -= 20
 
     y -= 20
     p.setFont("Helvetica-Bold", 13)

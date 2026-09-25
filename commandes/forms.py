@@ -17,9 +17,15 @@ class CommandeForm(forms.ModelForm):
     )
     quantite = forms.IntegerField(min_value=1, initial=1, label="Quantité")
 
+    politique_acceptee = forms.BooleanField(
+        required=True,
+        label="J'accepte la politique d'annulation et de remboursement",
+        error_messages={'required': "Tu dois accepter la politique d'annulation pour continuer."}
+    )
+
     class Meta:
         model = Commande
-        fields = ('mode_livraison', 'point_distribution', 'adresse_livraison')
+        fields = ('mode_livraison', 'point_distribution', 'adresse_livraison', 'politique_acceptee')
         widgets = {
             'mode_livraison': forms.RadioSelect,
         }
@@ -29,10 +35,19 @@ class CommandeForm(forms.ModelForm):
         mode = cleaned_data.get('mode_livraison')
         adresse = (cleaned_data.get('adresse_livraison') or '').strip()
 
-        if mode == Commande.ModeLivraison.LIVRAISON and not adresse:
-            self.add_error('adresse_livraison', "L'adresse est obligatoire pour une livraison à domicile.")
+        if mode == Commande.ModeLivraison.LIVRAISON:
+            if not adresse:
+                self.add_error('adresse_livraison', "L'adresse est obligatoire pour une livraison à domicile.")
+            if not cleaned_data.get('point_distribution'):
+                self.add_error('point_distribution', "Le point de distribution est obligatoire pour calculer les frais de livraison.")
 
         return cleaned_data
+
+
+class AnnulationForm(forms.Form):
+    motif = forms.CharField(
+        label="Motif de l'annulation", widget=forms.Textarea(attrs={'rows': 3}), required=True
+    )
 
 
 class PaiementForm(forms.ModelForm):

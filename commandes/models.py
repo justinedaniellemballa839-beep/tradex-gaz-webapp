@@ -30,11 +30,19 @@ class Commande(models.Model):
     statut = models.CharField(max_length=20, choices=Statut.choices, default=Statut.EN_ATTENTE)
     date_creation = models.DateTimeField(auto_now_add=True)
     delai_estime_heures = models.PositiveIntegerField(default=24, verbose_name="Délai estimé (heures)")
+    frais_livraison = models.DecimalField(max_digits=8, decimal_places=0, default=0, verbose_name="Frais de livraison (FCFA)")
+    latitude_client = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude_client = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    date_annulation = models.DateTimeField(null=True, blank=True)
+    motif_annulation = models.CharField(max_length=255, blank=True)
+    politique_acceptee = models.BooleanField(default=False, verbose_name="Politique d'annulation acceptée")
+    taux_remboursement = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Taux de remboursement (%)")
+    montant_rembourse = models.DecimalField(max_digits=10, decimal_places=0, null=True, blank=True)
 
     @property
     def montant_total(self):
         """Calcule le total en additionnant chaque ligne de la commande."""
-        return sum(ligne.sous_total for ligne in self.lignes.all())
+        return sum(ligne.sous_total for ligne in self.lignes.all()) + self.frais_livraison
 
     def __str__(self):
         return f"Commande #{self.id} - {self.client.username}"

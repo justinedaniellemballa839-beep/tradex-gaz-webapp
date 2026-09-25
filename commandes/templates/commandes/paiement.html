@@ -9,6 +9,9 @@
 
         <div class="card p-4 shadow-sm mb-3">
             <p class="mb-1"><strong>Commande #{{ commande.id }}</strong></p>
+            {% if commande.frais_livraison %}
+            <p class="mb-1">Frais de livraison : {{ commande.frais_livraison }} FCFA</p>
+            {% endif %}
             <p class="mb-0">Montant total : <strong>{{ commande.montant_total }} FCFA</strong></p>
         </div>
 

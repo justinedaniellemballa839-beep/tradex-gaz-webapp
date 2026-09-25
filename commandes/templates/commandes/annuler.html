@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Annuler la commande - Tradex Distrib'IA{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h1 class="mb-4 text-center">Annuler la commande CMD-{{ commande.id|stringformat:"06d" }}</h1>
+
+        <div class="alert alert-warning small">
+            Rappel de la politique de remboursement :<br>
+            Plus de 24h avant la livraison : 85% remboursés.<br>
+            Entre 12h et 24h avant : 70% remboursés.<br>
+            Moins de 12h avant, ou livraison déjà en cours : 50% remboursés.
+        </div>
+
+        <form method="post" class="card p-4 shadow-sm">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">{{ form.motif.label }}</label>
+                {{ form.motif }}
+                {% if form.motif.errors %}
+                    <div class="text-danger small">{{ form.motif.errors }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-danger w-100">Confirmer l'annulation</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

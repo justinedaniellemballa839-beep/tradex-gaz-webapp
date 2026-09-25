@@ -14,6 +14,7 @@ class Livraison(models.Model):
         ASSIGNEE = 'assignee', 'Assignée, en attente d\'acceptation'
         EN_COURS = 'en_cours', 'En cours de livraison'
         LIVREE = 'livree', 'Livrée'
+        ANNULEE = 'annulee', 'Annulée'
 
     commande = models.OneToOneField(Commande, on_delete=models.CASCADE, related_name='livraison')
     livreur = models.ForeignKey(
