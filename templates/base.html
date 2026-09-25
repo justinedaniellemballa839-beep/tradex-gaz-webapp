@@ -52,7 +52,11 @@
         .sidebar a:not(.btn).actif, #menuMobile a:not(.btn).actif { background-color: rgba(255,255,255,0.2); font-weight: 600; }
         .nav-titre { padding: 1rem 0.75rem 0.25rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
         .nav-bonjour { padding: 0 0.75rem; }
-        .zone-messages { max-width: 720px; margin: 1rem auto 0; }
+        .zone-messages {
+            position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 480px; z-index: 2000;
+        }
+        .zone-messages .alert { box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
         /* Palette Tradex appliquée aux composants Bootstrap restés bleus */
         :root { --tradex-rouge-clair: #E58B82; --bs-primary: #972E25; --bs-primary-rgb: 151,46,37; --bs-link-color: #972E25; --bs-link-color-rgb: 151,46,37; --bs-link-hover-color: #6E2124; --bs-link-hover-color-rgb: 110,33,36; }
         [data-bs-theme="dark"] { --bs-link-color: #E58B82; --bs-link-color-rgb: 229,139,130; --bs-link-hover-color: #F0A69F; --bs-link-hover-color-rgb: 240,166,159; }
@@ -210,7 +214,10 @@
                 {% if messages %}
                 <div class="zone-messages">
                     {% for message in messages %}
-                    <div class="alert alert-{% if message.level_tag == 'error' %}danger{% else %}{{ message.level_tag }}{% endif %} mb-2" role="alert">{{ message }}</div>
+                    <div class="alert alert-{% if message.level_tag == 'error' %}danger{% else %}{{ message.level_tag }}{% endif %} alert-dismissible fade show mb-2" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
                     {% endfor %}
                 </div>
                 {% endif %}
